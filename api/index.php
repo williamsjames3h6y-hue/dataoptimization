@@ -2,7 +2,17 @@
 
 header('Content-Type: application/json');
 
-$config = require __DIR__ . '/../config/app.php';
+$envFile = __DIR__ . '/.env';
+if (file_exists($envFile)) {
+    $dotenv = parse_ini_file($envFile);
+    if ($dotenv) {
+        foreach ($dotenv as $key => $value) {
+            $_ENV[$key] = $value;
+        }
+    }
+}
+
+$config = require __DIR__ . '/config/app.php';
 
 $allowedOrigins = $config['cors_allowed_origins'];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -20,21 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$envFile = __DIR__ . '/../.env';
-if (file_exists($envFile)) {
-    $dotenv = parse_ini_file($envFile);
-    if ($dotenv) {
-        foreach ($dotenv as $key => $value) {
-            $_ENV[$key] = $value;
-        }
-    }
-}
-
-require_once __DIR__ . '/../app/Database.php';
-require_once __DIR__ . '/../app/Middleware/Auth.php';
-require_once __DIR__ . '/../app/Controllers/AuthController.php';
-require_once __DIR__ . '/../app/Controllers/TaskController.php';
-require_once __DIR__ . '/../app/Controllers/AdminController.php';
+require_once __DIR__ . '/app/Database.php';
+require_once __DIR__ . '/app/Middleware/Auth.php';
+require_once __DIR__ . '/app/Controllers/AuthController.php';
+require_once __DIR__ . '/app/Controllers/TaskController.php';
+require_once __DIR__ . '/app/Controllers/AdminController.php';
 
 $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
