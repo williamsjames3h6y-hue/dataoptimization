@@ -20,10 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$dotenv = parse_ini_file(__DIR__ . '/../.env');
-if ($dotenv) {
-    foreach ($dotenv as $key => $value) {
-        $_ENV[$key] = $value;
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $dotenv = parse_ini_file($envFile);
+    if ($dotenv) {
+        foreach ($dotenv as $key => $value) {
+            $_ENV[$key] = $value;
+        }
     }
 }
 
@@ -135,7 +138,8 @@ try {
 
 } catch (\Exception $e) {
     http_response_code(500);
+    $errorMessage = $config['debug'] ? $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() : 'Internal server error';
     echo json_encode([
-        'error' => $config['debug'] ? $e->getMessage() : 'Internal server error'
+        'error' => $errorMessage
     ]);
 }
