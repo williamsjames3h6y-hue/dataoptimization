@@ -1,59 +1,216 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Data Annotation Platform - Laravel API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a pure PHP API built with a Laravel-like structure that connects to MySQL database.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.0 or higher
+- MySQL 5.7 or higher
+- Apache with mod_rewrite enabled (or Nginx)
+- PDO MySQL extension
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local Development Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Database Setup
 
-## Learning Laravel
+Create a MySQL database and import the schema:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+mysql -u root -p
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```sql
+CREATE DATABASE data_annotation;
+USE data_annotation;
+SOURCE database/schema.sql;
+```
 
-## Laravel Sponsors
+### 2. Configure Environment
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Copy the `.env.example` file to `.env` and update your database credentials:
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Edit `.env`:
+```
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=data_annotation
+DB_USERNAME=root
+DB_PASSWORD=your_password
+JWT_SECRET=your-random-secret-key-here
+```
 
-## Contributing
+### 3. Start PHP Server
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+cd public
+php -S localhost:8000
+```
 
-## Code of Conduct
+The API will be available at `http://localhost:8000`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Update Frontend Config
 
-## Security Vulnerabilities
+Update your React frontend `.env` file:
+```
+VITE_API_URL=http://localhost:8000
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## cPanel Deployment
 
-## License
+### 1. Upload Files
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Upload all files in the `api` folder to your cPanel hosting:
+- Upload to: `public_html/api/`
+
+### 2. Database Setup
+
+1. Create a MySQL database in cPanel
+2. Import `database/schema.sql` using phpMyAdmin
+3. Note your database name, username, and password
+
+### 3. Configure .env
+
+Edit `api/.env` file with your cPanel database credentials:
+
+```
+APP_NAME="Data Annotation Platform"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+
+DB_CONNECTION=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_DATABASE=your_cpanel_db_name
+DB_USERNAME=your_cpanel_db_user
+DB_PASSWORD=your_cpanel_db_password
+
+JWT_SECRET=generate-random-32-character-string
+
+CORS_ALLOWED_ORIGINS=https://yourdomain.com
+```
+
+### 4. Configure .htaccess
+
+The `.htaccess` files are already configured. Ensure:
+- `api/.htaccess` redirects to `public/`
+- `api/public/.htaccess` handles URL rewriting
+
+### 5. Set Permissions
+
+Set proper permissions:
+```bash
+chmod 755 api/storage/logs
+```
+
+### 6. Update Frontend
+
+Update your React frontend `.env.production`:
+```
+VITE_API_URL=https://yourdomain.com/api
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/signup` - Register new user
+- `POST /api/auth/signin` - Login
+- `POST /api/auth/signout` - Logout
+- `GET /api/auth/user` - Get current user
+
+### Tasks
+- `GET /api/tasks` - Get available tasks
+- `POST /api/tasks/:id/submit` - Submit task
+- `GET /api/tasks/stats` - Get user stats
+
+### Admin (Requires admin role)
+- `GET /api/admin/stats` - Platform statistics
+- `GET /api/admin/users` - List all users
+- `PUT /api/admin/users/:id/role` - Update user role
+- `DELETE /api/admin/users/:id` - Delete user
+- `GET /api/admin/products` - List products
+- `POST /api/admin/products` - Create product
+- `PUT /api/admin/products/:id` - Update product
+- `DELETE /api/admin/products/:id` - Delete product
+- `POST /api/admin/tasks/generate` - Generate tasks
+- `GET /api/admin/payment-gateways` - List payment gateways
+- `POST /api/admin/payment-gateways` - Create gateway
+- `PUT /api/admin/payment-gateways/:id` - Update gateway
+- `DELETE /api/admin/payment-gateways/:id` - Delete gateway
+
+## Default Admin Account
+
+After importing the database schema, you can login with:
+- **Email**: admin@example.com
+- **Password**: admin123
+
+**IMPORTANT**: Change this password immediately in production!
+
+## Directory Structure
+
+```
+api/
+├── app/
+│   ├── Controllers/     # API Controllers
+│   ├── Middleware/      # Authentication middleware
+│   └── Database.php     # Database connection
+├── config/              # Configuration files
+├── database/            # Database schema
+├── public/              # Public web root
+│   ├── .htaccess       # URL rewriting
+│   └── index.php       # Application entry point
+├── storage/            # Logs and temp files
+├── .env                # Environment configuration
+└── .htaccess          # Root redirects
+
+```
+
+## Troubleshooting
+
+### 500 Internal Server Error
+
+1. Check `.htaccess` is working (mod_rewrite enabled)
+2. Verify database credentials in `.env`
+3. Check `storage/logs/` permissions (755)
+4. Enable `APP_DEBUG=true` to see error details
+
+### Database Connection Failed
+
+1. Verify MySQL is running
+2. Check database credentials in `.env`
+3. Ensure database exists and schema is imported
+4. Test connection with `mysql -u username -p database`
+
+### CORS Errors
+
+1. Check `CORS_ALLOWED_ORIGINS` in `.env`
+2. Verify `.htaccess` headers are enabled
+3. Ensure mod_headers is enabled in Apache
+
+### 404 Errors
+
+1. Verify `.htaccess` files are uploaded
+2. Check mod_rewrite is enabled
+3. Ensure requests go to `public/index.php`
+
+## Security Notes
+
+1. **Change JWT_SECRET**: Generate a random 32+ character string
+2. **Change admin password**: Login and update immediately
+3. **Set APP_DEBUG=false** in production
+4. **Restrict CORS**: Set specific domain instead of `*`
+5. **Use HTTPS**: Always use SSL certificate in production
+6. **Database backups**: Regular automated backups
+7. **Keep PHP updated**: Use latest stable PHP version
+
+## Support
+
+For issues or questions, check:
+1. PHP error logs
+2. MySQL error logs
+3. Browser console for API errors
+4. Database connection test
