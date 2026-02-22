@@ -1,26 +1,14 @@
 RewriteEngine On
 
-# Force HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Redirect all API requests to backend
+RewriteRule ^api/(.*)$ backend/public/index.php [L]
 
-# Serve static files from dist folder
-RewriteCond %{REQUEST_URI} ^/assets/
-RewriteRule ^assets/(.*)$ dist/assets/$1 [L]
+# Prevent directory browsing
+Options -Indexes
 
-# Serve product images
-RewriteCond %{REQUEST_URI} ^/products/
-RewriteRule ^products/(.*)$ public/products/$1 [L]
-
-# Serve other static files from public
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^(.+\.(jpg|jpeg|png|gif|webp|svg|ico))$ public/$1 [L]
-
-# API requests
-RewriteCond %{REQUEST_URI} ^/api/
-RewriteRule ^api/(.*)$ api/public/index.php [L,QSA]
-
-# All other requests go to dist/index.html (React SPA)
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ dist/index.html [L,QSA]
+# Enable CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>

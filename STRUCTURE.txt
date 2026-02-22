@@ -1,0 +1,97 @@
+EARNINGS LLC - PHP + MYSQL PLATFORM
+====================================
+
+PROJECT STRUCTURE:
+------------------
+
+earnings_platform/
+├── backend/                        # PHP Backend Application
+│   ├── config/
+│   │   ├── database.php           # Database connection config
+│   │   └── jwt.php                # JWT token generation & validation
+│   ├── controllers/
+│   │   ├── AuthController.php     # User registration, login, profile
+│   │   ├── TaskController.php     # Products, tasks, VIP tiers
+│   │   └── AdminController.php    # Admin dashboard, user/product management
+│   ├── core/
+│   │   └── Database.php           # PDO database wrapper
+│   ├── database/
+│   │   └── schema.sql             # Complete database schema
+│   ├── middleware/
+│   │   └── Auth.php               # JWT authentication middleware
+│   └── public/
+│       └── index.php              # Main API router
+├── public/                        # Static Assets
+│   ├── logo.jpg                   # Site logo
+│   └── products/                  # Product images
+│       ├── P1.jpg
+│       ├── P2.jpg
+│       ├── P3.jpg
+│       ├── P4.jpg
+│       └── P5.jpg
+├── .htaccess                      # Apache rewrite rules
+├── .env                           # Environment variables
+├── .gitignore                     # Git ignore rules
+├── README.md                      # Project documentation
+├── DEPLOYMENT.md                  # Deployment guide
+└── STRUCTURE.txt                  # This file
+
+TECHNOLOGY STACK:
+-----------------
+- PHP 8.0+
+- MySQL 5.7+
+- Apache with mod_rewrite
+- JWT Authentication
+- PDO for database access
+
+DATABASE TABLES:
+----------------
+1. users         - User accounts, balances, VIP tiers
+2. products      - Products for brand identification tasks
+3. tasks         - Completed annotation tasks
+4. vip_tiers     - VIP membership tier definitions
+5. transactions  - Earnings and withdrawal records
+
+API ENDPOINTS:
+--------------
+
+PUBLIC:
+POST   /api/auth/register          Register new user
+POST   /api/auth/login             User login
+GET    /api/products               Get active products
+GET    /api/vip-tiers              Get VIP tiers
+
+AUTHENTICATED (requires JWT token):
+GET    /api/auth/profile           Get user profile
+POST   /api/tasks/submit           Submit completed task
+GET    /api/tasks                  Get user's tasks
+
+ADMIN (requires admin token):
+GET    /api/admin/stats            Platform statistics
+GET    /api/admin/users            List all users
+PUT    /api/admin/users/:id        Update user
+DELETE /api/admin/users/:id        Delete user
+GET    /api/admin/products         List products
+POST   /api/admin/products         Create product
+PUT    /api/admin/products/:id     Update product
+DELETE /api/admin/products/:id     Delete product
+GET    /api/admin/tasks            List all tasks
+
+DEPLOYMENT:
+-----------
+1. Upload files to web host
+2. Create MySQL database
+3. Import schema.sql
+4. Configure database credentials
+5. Set file permissions
+6. Test API endpoints
+
+DEFAULT ADMIN:
+--------------
+Email: admin@earnings.com
+Password: admin123
+(Change immediately after deployment!)
+
+LIVE URL:
+---------
+https://earningsllc.online
