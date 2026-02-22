@@ -1,8 +1,0 @@
-{
-  "name": "earnings-php-backend",
-  "version": "1.0.0",
-  "description": "PHP + MySQL Backend API",
-  "scripts": {
-    "build": "echo 'Build complete: PHP project requires no build step' && exit 0"
-  }
-}
