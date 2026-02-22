@@ -26,21 +26,25 @@ class AuthController {
         }
 
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+        $fullName = $data['name'] ?? $data['full_name'] ?? '';
+        $role = $data['role'] ?? 'user';
 
         $userId = $this->db->insert(
-            "INSERT INTO users (email, password, full_name) VALUES (?, ?, ?)",
-            [$email, $hashedPassword, $data['full_name'] ?? '']
+            "INSERT INTO users (email, password, full_name, role) VALUES (?, ?, ?, ?)",
+            [$email, $hashedPassword, $fullName, $role]
         );
 
         if ($userId) {
-            $token = JWTConfig::generateToken($userId, $email, 'user');
+            $token = JWTConfig::generateToken($userId, $email, $role);
             return [
                 'success' => true,
+                'message' => 'Registration successful',
                 'token' => $token,
                 'user' => [
                     'id' => $userId,
+                    'name' => $fullName,
                     'email' => $email,
-                    'role' => 'user',
+                    'role' => $role,
                     'balance' => 0,
                     'vip_tier' => 'Free'
                 ]
@@ -67,12 +71,17 @@ class AuthController {
 
         $token = JWTConfig::generateToken($user['id'], $user['email'], $user['role']);
 
-        unset($user['password']);
-
         return [
             'success' => true,
             'token' => $token,
-            'user' => $user
+            'user' => [
+                'id' => $user['id'],
+                'name' => $user['full_name'],
+                'email' => $user['email'],
+                'role' => $user['role'],
+                'balance' => $user['balance'],
+                'vip_tier' => $user['vip_tier']
+            ]
         ];
     }
 

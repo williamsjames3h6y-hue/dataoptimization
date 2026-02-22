@@ -22,7 +22,41 @@ $data = json_decode(file_get_contents('php://input'), true) ?? [];
 $path = parse_url($requestUri, PHP_URL_PATH);
 $path = str_replace('/api', '', $path);
 
+// Support query parameter based routing
+$action = $_GET['action'] ?? '';
+
 try {
+    // Handle query parameter actions
+    if ($action) {
+        switch ($action) {
+            case 'register':
+                if ($requestMethod === 'POST') {
+                    $controller = new AuthController();
+                    $result = $controller->register($data);
+                    echo json_encode($result);
+                }
+                exit;
+
+            case 'login':
+                if ($requestMethod === 'POST') {
+                    $controller = new AuthController();
+                    $result = $controller->login($data);
+                    echo json_encode($result);
+                }
+                exit;
+
+            case 'profile':
+                if ($requestMethod === 'GET') {
+                    $user = AuthMiddleware::authenticate();
+                    $controller = new AuthController();
+                    $result = $controller->getProfile($user['user_id']);
+                    echo json_encode($result);
+                }
+                exit;
+        }
+    }
+
+    // Handle path-based routing
     switch ($path) {
         case '/auth/register':
             if ($requestMethod === 'POST') {
